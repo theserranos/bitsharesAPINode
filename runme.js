@@ -10,7 +10,7 @@ function out(arg, callback) {
     var wss = new webSocket('wss://bitshares.openledger.info/ws');
 
     wss.on('open', () => {
-        console.log('connected to:', wss.url);
+        console.log('alf connected to:', wss.url);
         wss.send(JSON.stringify(arg));
     });
 
