@@ -1,0 +1,27 @@
+{
+  "name": "bitshares-api-node",
+  "version": "0.0.1",
+  "description": "bitshares api for node.js",
+  "main": "nodeme.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theserranos/bitsharesAPINode.git"
+  },
+  "keywords": [
+    "bitshares",
+    "api",
+    "node",
+    "ledger",
+    "crypto",
+    "blockchain"
+  ],
+  "author": "devba, luisan00",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/theserranos/bitsharesAPINode/issues"
+  },
+  "homepage": "https://github.com/theserranos/bitsharesAPINode#readme"
+}
