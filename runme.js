@@ -10,7 +10,7 @@ function out(arg, callback) {
     var wss = new webSocket('wss://bitshares.openledger.info/ws');
 
     wss.on('open', () => {
-        console.log('connected to:', wss.url);
+        console.log('alf connected to:', wss.url);
         wss.send(JSON.stringify(arg));
     });
 
@@ -107,5 +107,7 @@ app.get('/api/lookup_asset_symbols/', function(req, res) {
 
 
 app.listen(3333, () => {
-    console.log('Estamos alerta en 3333')
+    console.log('--Estamos alerta en 3333')
 });
+
+//testin my branch 
