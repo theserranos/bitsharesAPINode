@@ -23,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/theserranos/bitsharesAPINode/issues"
   },
-  "homepage": "https://github.com/theserranos/bitsharesAPINode#readme"
+  "homepage": "https://github.com/theserranos/bitsharesAPINode#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "ws": "^2.0.3"
+  }
 }
