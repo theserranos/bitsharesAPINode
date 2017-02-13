@@ -3,7 +3,6 @@
  * (c) Copyright 2016 by theSerranos
  * Licensed under MIT
  */
-
 var app = require('express')()
 var bodyParser = require('body-parser');
 var handler = require('./api/');
@@ -26,7 +25,7 @@ app.post('/api/', (req, res) => {
 app.post('/api/usefunction/', (req, res) => {
     if (req.body) {
         try {
-            handler.public.getFunction(req.body.fname)
+            handler.public.getFunction(req.body.fname, req.body.payload)
                 .then((response) => {
                     res.send(response);
                     res.end();
@@ -37,7 +36,7 @@ app.post('/api/usefunction/', (req, res) => {
                 })
         } catch (e) {
             res.send({
-                error: 'fname key not found'
+                error: 'fname or payload not found'
             })
         }
     } else {
@@ -46,8 +45,7 @@ app.post('/api/usefunction/', (req, res) => {
         })
         res.end();
     }
-
-})
+});
 
 app.listen(3333, () => {
     console.log('Estamos alerta en 3333')
