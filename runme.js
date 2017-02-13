@@ -1,110 +1,53 @@
 /**
- *
+ * bitshares-api-node
+ * (c) Copyright 2016 by theSerranos
+ * Licensed under MIT
  */
 
 var app = require('express')()
-var webSocket = require('ws')
+var bodyParser = require('body-parser');
+var handler = require('./api/');
 
-function out(arg, callback) {
+// parsing JSON & application/x-www-form-urlencoded
 
-    var wss = new webSocket('wss://bitshares.openledger.info/ws');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
-    wss.on('open', () => {
-        console.log('connected to:', wss.url);
-        wss.send(JSON.stringify(arg));
-    });
+app.post('/api/', (req, res) => {
+    handler.public.api(req)
+        .then((response) => {
+            res.send(response)
+            res.end()
+        });
+});
 
-    wss.on('message', (data) => {
-        console.log(' --- ', JSON.parse(data).result);
-        wss.terminate();
-        callback(null, JSON.parse(data).result)
-    });
-    wss.on('error', (error) => {
-        console.log(' +++' + error);
-        callback(error, null)
-    });
-    wss.on('close', (vdata) => {
-        console.log(' -- cerrada conexion', vdata)
-    });
-}
+app.post('/api/usefunction/', (req, res) => {
+    if (req.body) {
+        try {
+            handler.public.getFunction(req.body.fname)
+                .then((response) => {
+                    res.send(response);
+                    res.end();
+                })
+                .catch((error) => {
+                    res.send(error)
+                    res.end();
+                })
+        } catch (e) {
+            res.send({
+                error: 'fname key not found'
+            })
+        }
+    } else {
+        res.send({
+            error: 'empty body'
+        })
+        res.end();
+    }
 
-// fin funcion out 
-
-app.get('/api/', function(req, res) {
-    res.send('Welcome to api v1')
-    res.end()
 })
-
-app.get('/api/get_accounts/', function(req, res) {
-    console.log(req.query);
-    var temp = {
-        "id": req.query.id,
-        "method": "call",
-        "params": [0, "get_accounts", [
-            ["op3nalf"]
-        ]]
-    };
-
-    out(temp, function(err, resp) {
-        if (err) {
-            res.send('error');
-            res.end();
-        } else {
-            res.send(resp);
-            res.end();
-        }
-    })
-
-});
-
-//get full accounts
-
-app.get('/api/get_full_accounts/', function(req, res) {
-    console.log(req.query);
-    var temp = {
-        "id": req.query.id,
-        "method": "call",
-        "params": [0, "get_full_accounts", [
-            ["1.2.0"], false
-        ]]
-    };
-
-
-    out(temp, function(err, resp) {
-        if (err) {
-            res.send('error');
-            res.end();
-        } else {
-            res.send(resp);
-            res.end();
-        }
-    })
-
-});
-
-
-app.get('/api/lookup_asset_symbols/', function(req, res) {
-    console.log(req.query);
-    var temp = {
-        "id": req.query.id,
-        "method": "call",
-        "params": [0, "lookup_asset_symbols", [
-            ["1.3.0"]
-        ]]
-    };
-    out(temp, function(err, resp) {
-        if (err) {
-            res.send('error');
-            res.end();
-        } else {
-            res.send(resp);
-            res.end();
-        }
-    })
-
-});
-
-
 
 app.listen(3333, () => {
     console.log('Estamos alerta en 3333')
