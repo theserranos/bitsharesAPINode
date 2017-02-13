@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/theserranos/bitsharesAPINode#readme",
   "dependencies": {
+    "body-parser": "^1.16.1",
     "express": "^4.14.1",
     "ws": "^2.0.3"
   }
