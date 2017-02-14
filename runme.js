@@ -1,44 +1,40 @@
 /**
- * bitshares-api-node
- * (c) Copyright 2016 by theSerranos
- * Licensed under MIT
+ *
  */
 var app = require('express')()
 var bodyParser = require('body-parser');
 var handler = require('./api/');
 
 // parsing JSON & application/x-www-form-urlencoded
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
 app.post('/api/', (req, res) => {
-    handler.public.api(req)
-        .then((response) => {
-            res.send(response)
-            res.end()
-        });
+    res.send(JSON.stringify({
+        api: {
+            name: 'codename',
+            version: 'v1a'
+        }
+    }))
+    res.end();
 });
 
 app.post('/api/usefunction/', (req, res) => {
-    if (req.body) {
+    console.log(req.body);
+    if (req.body != null) {
         try {
-            handler.public.getFunction(req.body.fname, req.body.payload)
-                .then((response) => {
-                    res.send(response);
-                    res.end();
-                })
-                .catch((error) => {
-                    res.send(error)
-                    res.end();
-                })
+            handler.public(req.body.id, req.body.method, req.body.params, function(response) {
+                res.send(response)
+                res.end();
+            })
         } catch (e) {
             res.send({
-                error: 'fname or payload not found'
+                'Error': 'Empty body'
             })
         }
+
     } else {
         res.send({
             error: 'empty body'
