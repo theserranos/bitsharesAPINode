@@ -1,12 +1,10 @@
 /**
- *
+ * bitsharesAPINode main file.
  */
 var app = require('express')()
 var bodyParser = require('body-parser');
 var handler = require('./api');
-
 const set = require('./config.js').api
-
 
 // parsing JSON & application/x-www-form-urlencoded
 app.use(bodyParser.json());
@@ -15,19 +13,19 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.post('/api/', (req, res) => {
-    console.time('api')
+    console.time('/api/')
     res.send(JSON.stringify({
         api: {
-            name: 'codename',
+            name: 'bitsharesAPINode',
             version: 'v1a'
         }
     }))
     res.end();
-    cosole.timeEnd('api')
+    cosole.timeEnd('/api/')
 });
 
 app.post('/api/wsocket/', (req, res) => {
-    console.time('/api/wsocket/', 'post')
+    console.time('/api/wsocket/')
     try {
         handler.wsocket(req.body.id, req.body.method, req.body.params, (response) => {
             res.send(response)
@@ -39,12 +37,11 @@ app.post('/api/wsocket/', (req, res) => {
         })
         res.end();
     }
-    console.timeEnd('/api/wsocket/', 'post');
-
+    console.timeEnd('/api/wsocket/');
 });
 
 app.post('/api/rpc/', (req, res) => {
-    console.time('api/rpc');
+    console.time('/api/rpc/');
     try {
         handler.rpc.client(req.body.id, req.body.method, req.body.params, (error, response) => {
             if (error) {
@@ -60,7 +57,7 @@ app.post('/api/rpc/', (req, res) => {
         })
         res.end();
     }
-    console.timeEnd('api/rpc');
+    console.timeEnd('/api/rpc/');
 });
 
 app.listen(set.port, (err) => {
