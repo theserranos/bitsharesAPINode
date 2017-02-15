@@ -33,6 +33,7 @@ app.post('/api/usefunction/', (req, res) => {
             res.send({
                 'Error': 'Empty body'
             })
+            res.end();
         }
 
     } else {
