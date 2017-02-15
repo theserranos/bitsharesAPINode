@@ -44,6 +44,9 @@ app.post('/api/usefunction/', (req, res) => {
     }
 });
 
-app.listen(3333, () => {
+app.listen(3333, (err) => {
+    if(err){
+        throw err;
+    }
     console.log('Estamos alerta en 3333')
 });
