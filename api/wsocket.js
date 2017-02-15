@@ -1,14 +1,9 @@
-/**
- *
- * 
- */
-
+'use strinc;'
 var webSocket = require('ws');
 var processOut = require('./processOut')
 var wsServer = require('../config.js').ws;
 
 var public = function(id, method, params, callback) {
-
     var self = this;
     this.request = {};
     this.request.id = id || Math.floor((Math.random() * 65536) + 0);
@@ -21,17 +16,13 @@ var public = function(id, method, params, callback) {
     //  Si necesitamos conocer  la accion a realizar la obtenemos del array params[1]
     //  
     // this.fname = params[1];
-
     var wss = new webSocket(wsServer);
 
     wss.on('open', () => {
         wss.send(JSON.stringify(this.request));
     });
-
     wss.on('message', (msg) => {
-
         wss.terminate();
-        
         processOut(self.request.method, msg)
             .then((output) => {
                 callback(output)
@@ -40,13 +31,11 @@ var public = function(id, method, params, callback) {
                 callback(error);
             });
     });
-
     wss.on('error', (err) => {
         callback({
             Error: err
         })
     });
-
 }
 
 module.exports = public;
