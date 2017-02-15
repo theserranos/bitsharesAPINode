@@ -23,7 +23,7 @@ module.exports = function(fname, message) {
                 //  & filtramos
                 //  finalmente retornamos la respuesta.
                 //  
-                resolve(self.message)
+                resolve(self.msg)
                 break;
             default:
                 // si la funcion no es la retornamos Error
