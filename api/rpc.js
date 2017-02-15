@@ -1,7 +1,4 @@
-/**
- * @name bitnode.js
- */
-
+'use strict;'
 var http = require('http');
 var crypto = require('crypto');
 var set = require('../config.js').rpc;
@@ -14,7 +11,6 @@ rpc.config = {
 };
 
 rpc.client = function(id, method, params, callback) {
-
     var payload = JSON.stringify({
         id: id || Math.floor((Math.random() * 65536) + 0),
         method: method,
@@ -38,20 +34,18 @@ rpc.client = function(id, method, params, callback) {
         // push chunks to buffer
         response.on('data', (chunk) => {
             body += chunk;
-        })
+        });
 
         response.on('end', () => {
-
-            callback(null, body)
-        })
+            callback(null, body);
+        });
 
         response.on('error', (err) => {
-            callback(err, null)
+            callback(err, null);
         })
     });
-
     proxy.on('error', (err) => {
-        callback(err, null)
+        callback(err, null);
     });
     proxy.write(payload);
     proxy.end();
