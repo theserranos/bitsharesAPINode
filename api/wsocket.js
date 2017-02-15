@@ -4,8 +4,12 @@
  */
 
 var webSocket = require('ws');
+var processOut = require('./processOut')
+var wsServer = require('../config.js').ws;
 
 var public = function(id, method, params, callback) {
+
+    var self = this;
     this.request = {};
     this.request.id = id || Math.floor((Math.random() * 65536) + 0);
     this.request.method = method || 'call';
@@ -16,20 +20,31 @@ var public = function(id, method, params, callback) {
     // 
     //  Si necesitamos conocer  la accion a realizar la obtenemos del array params[1]
     //  
-    this.fname = params[1];
+    // this.fname = params[1];
 
-    var wss = new webSocket('wss://bitshares.openledger.info/ws');
+    var wss = new webSocket(wsServer);
+
     wss.on('open', () => {
         wss.send(JSON.stringify(this.request));
     });
 
     wss.on('message', (msg) => {
+
         wss.terminate();
-        callback(msg)
+        
+        processOut(self.request.method, msg)
+            .then((output) => {
+                callback(output)
+            })
+            .catch((error) => {
+                callback(error);
+            });
     });
 
     wss.on('error', (err) => {
-        callback({Error: err})
+        callback({
+            Error: err
+        })
     });
 
 }

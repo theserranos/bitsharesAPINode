@@ -1,3 +1,4 @@
 module.exports = {
-    public: require('./public')
-}
+    wsocket: require('./wsocket'),
+    rpc: require('./rpc')
+};

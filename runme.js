@@ -3,7 +3,10 @@
  */
 var app = require('express')()
 var bodyParser = require('body-parser');
-var handler = require('./api/');
+var handler = require('./api');
+
+const set = require('./config.js').api
+
 
 // parsing JSON & application/x-www-form-urlencoded
 app.use(bodyParser.json());
@@ -12,6 +15,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.post('/api/', (req, res) => {
+    console.time('api')
     res.send(JSON.stringify({
         api: {
             name: 'codename',
@@ -19,34 +23,50 @@ app.post('/api/', (req, res) => {
         }
     }))
     res.end();
+    cosole.timeEnd('api')
 });
 
-app.post('/api/usefunction/', (req, res) => {
-    console.log(req.body);
-    if (req.body != null) {
-        try {
-            handler.public(req.body.id, req.body.method, req.body.params, function(response) {
-                res.send(response)
-                res.end();
-            })
-        } catch (e) {
-            res.send({
-                'Error': 'Empty body'
-            })
+app.post('/api/wsocket/', (req, res) => {
+    console.time('/api/wsocket/', 'post')
+    try {
+        handler.wsocket(req.body.id, req.body.method, req.body.params, (response) => {
+            res.send(response)
             res.end();
-        }
-
-    } else {
+        })
+    } catch (e) {
         res.send({
-            error: 'empty body'
+            error: e
         })
         res.end();
     }
+    console.timeEnd('/api/wsocket/', 'post');
+
 });
 
-app.listen(3333, (err) => {
-    if(err){
-        throw err;
+app.post('/api/rpc/', (req, res) => {
+    console.time('api/rpc');
+    try {
+        handler.rpc.client(req.body.id, req.body.method, req.body.params, (error, response) => {
+            if (error) {
+                throw error;
+            } else {
+                res.send(response);
+                res.end();
+            }
+        })
+    } catch (e) {
+        res.send({
+            error: e
+        })
+        res.end();
     }
-    console.log('Estamos alerta en 3333')
+    console.timeEnd('api/rpc');
+});
+
+app.listen(set.port, (err) => {
+    if (err) {
+        throw err;
+    } else {
+        console.log('Listening on: ', set.port);
+    }
 });
