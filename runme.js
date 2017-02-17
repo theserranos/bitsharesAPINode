@@ -4,6 +4,8 @@
 var app = require('express')()
 var bodyParser = require('body-parser');
 var handler = require('./api');
+var route = require('./DEXlibs/route.js');
+
 const set = require('./config.js').api
 
 // parsing JSON & application/x-www-form-urlencoded
@@ -14,14 +16,28 @@ app.use(bodyParser.urlencoded({
 
 app.post('/api/', (req, res) => {
     console.time('/api/')
-    res.send(JSON.stringify({
+    console.log(req.query);
+   /* res.send(JSON.stringify({
         api: {
             name: 'bitsharesAPINode',
             version: 'v1a'
         }
-    }))
-    res.end();
+    }))*/
+    var aux={
+        data: {
+            
+            fname:req.query.fname,
+            version: 'v1a'
+        }
+    };
+   route(aux,function(x){
+  console.log('---- res back in runme ',x);
+  res.send('oooo');
+  res.send(JSON.stringify(x));
+  res.end;
+  // res.end();
     console.timeEnd('/api/')
+    });
 });
 
 app.post('/api/wsocket/', (req, res) => {
@@ -67,3 +83,10 @@ app.listen(set.port, (err) => {
         console.log('Listening on: ', set.port);
     }
 });
+
+
+
+function route (){
+  console.log ('route function')
+
+}
