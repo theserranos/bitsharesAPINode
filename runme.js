@@ -21,7 +21,7 @@ app.post('/api/', (req, res) => {
         }
     }))
     res.end();
-    cosole.timeEnd('/api/')
+    console.timeEnd('/api/')
 });
 
 app.post('/api/wsocket/', (req, res) => {
