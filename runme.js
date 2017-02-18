@@ -3,7 +3,7 @@
  */
 var app = require('express')()
 var bodyParser = require('body-parser');
-var handler = require('./api');
+//var handler = require('./api');
 var route = require('./DEXlibs/route.js');
 
 const set = require('./config.js').api
@@ -14,29 +14,33 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.post('/api/', (req, res) => {
-    console.time('/api/')
-    console.log(req.query);
-   /* res.send(JSON.stringify({
-        api: {
-            name: 'bitsharesAPINode',
-            version: 'v1a'
-        }
-    }))*/
+
+
+
+app.post('/api/', (req, resPost) => {
+    console.time('/api/'); console.log(req.body);
     var aux={
-        data: {
-            
-            fname:req.query.fname,
-            version: 'v1a'
-        }
+             
+            fname:req.body.fname,
+            accountFrom:req.body.accountFrom,
+            version: 'v1a',
+            vaccount: req.body.vaccount,
+            vobject:req.body.vobject 
+  
     };
-   route(aux,function(x){
-  console.log('---- res back in runme ',x);
-  res.send('oooo');
-  res.send(JSON.stringify(x));
-  res.end;
-  // res.end();
-    console.timeEnd('/api/')
+  
+   route(aux,function(err,res){
+     if (err){console.log ('error :',err);
+              resPost.send(JSON.stringify(err));
+              resPost.end();
+             }
+     else{
+ 
+        resPost.send(JSON.stringify(res));
+        resPost.end();
+  
+         console.timeEnd('/api/')
+     }
     });
 });
 

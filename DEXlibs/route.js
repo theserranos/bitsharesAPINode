@@ -1,85 +1,79 @@
-module.exports = function(lib) {
-  var webSocket = require('ws')
-  
- console.log(lib); 
-  vaccount='op3nalf';
+var ws=require('ws');
+const vwssserver = require('../config.js').ws
 
-   
-  switch(lib.data.fname) {
+module.exports = function(objinput,callback) {
+  //console.log(objinput);
+   switch(objinput.fname) {
         case "get_account_balances":
-              
-               var temp2= { "id": 0,"method": "call", "params": [0, "get_account_balances",[ vaccount ,[]]]}
+             
+              // var temp2= { "id": 0,"method": "call", "params": [0, "get_account_balances",[ objinput.vaccount ,[]]]}
+             console.log(" ========= split " ,objinput.vaccount.split(' ') );
+       var temp2= { "id": 0,"method": "call", "params": [0, "get_account_balances",objinput.vaccount.split(' ')]}
+                 console.log('gaccb---',temp2);
                break;
       
-        case "get_named_account_balancesx":
+        case "get_named_account_balances":
+        console.log(" ========= split " ,objinput.vaccount.split(' ') );
                 // var temp2= { "id": 0,"method": "call", "params": [0, "get_account_balances",['1.2.153554',['1.3.1','1.3.0']]]}
-               var temp2= { "id": 0,"method": "call", "params": [0, "get_named_account_balances", [req.query.vacc ,[]]]}
-            
+               var temp2= { "id": 0,"method": "call", "params": [0, "get_named_account_balances",objinput.vaccount.split(' ')]}
+                var temp2= { "id": 0,"method": "call", "params": [0, "get_named_account_balances",["op3nalf"]]}
+                break;
         case "list_assets":
              var temp2= { "id": 0,"method": "call", "params": [0, "list_assets",[10,10]]}
               break;
 
          case "lookup_accounts":
                var temp2= { "id": 0,"method": "call", "params": [0, "lookup_accounts",['op3nalf',1]]}
-               var temp2= { "id": 0,"method": "call", "params": [0, "lookup_accounts",[req.query.vacc,1]]}
+               var temp2= { "id": 0,"method": "call", "params": [0, "lookup_accounts",[objinput.vaccount,1]]}
                 break;  
 
         case "get_account_by_name":
-               var temp2= { "id": 0,"method": "call", "params": [0, "get_account_by_name",['op3nalf']]}
+               var temp2= { "id": 0,"method": "call", "params": [0, "get_account_by_name",[objinput.vaccount.split()]]}
                 break;  
        case "get_objects":
-               var temp2= { "id": 0,"method": "call", "params": [0, "get_objects", [[req.query.vacc]]]}; break;  
+       console.log('param  ----- ' ,objinput.vobject);
+       
+                console.log(" ========= split " ,objinput.vobject.split(' ') );
+             var temp2= { "id": 0,"method": "call", "params": [0, "get_objects", [ objinput.vobject.split(' ') ]]};
+          //    var temp2= { "id": 0,"method": "call", "params": [0, "get_objects", [["1.3.1044","1.3.888" ]]]};
+      
+                break;  
       
         case "transfer":
-                var test=transac('ẗransfer')  ;
+               // var test=transac('ẗransfer')  ;
                 console.log(test) ;break;  
       
       
-    default:
-            res.send('------nothing found');
-      break;
-   
-       // code block
+         default:
+            console.log('------nothing found');
+            callback({error:'no function available'},null)
 }
+           var wss = new ws(vwssserver.host) //habra que pasarlo como parametro'
+             wss.on('open', () => {
+                     console.log('alf connected to:', wss.url);
+                     wss.send(JSON.stringify(temp2));
+             });
   
-     socketmanager(temp2, function(err, resp) 
-        {if (err) {console.log('error'); } 
-          else {console.log(resp);lib.result=resp;res.send('ppp')}
-        })
+               wss.on('message', (data) => {
+                  console.log(' --- message received testalf '); //,JSON.parse(data).result)
+                  var  v=JSON.parse(data);
+                  wss.terminate();
+                 if(v.error){ console.log(v.error.message);callback(v,null)}
+                 else { console.log('---------------------------- received');
+                       console.log(data);
+                        callback(null, JSON.parse(data))
+                      }
+
+                  
+                  });
   
-  console.log(temp2);
-  
- 
-  
- 
-  function socketmanager(arg, callback) {
-
-   var wss = new webSocket('wss://bitshares.openledger.info/ws');
-//   var wss = new webSocket('ws://rgbplex.com:8090');
-
-    wss.on('open', () => {
-        console.log('alf connected to:', wss.url);
-        wss.send(JSON.stringify(arg));
-    });
-
-    wss.on('message', (data) => {
-        console.log(' --- message received testalf '); //,JSON.parse(data).result)
-         v=JSON.parse(data);
-       if(v.error){ console.log(v.error.message)}
-      else { console.log('---------------------------- received');}
-
-        callback(null, JSON.parse(data))
-    });
-    wss.on('error', (error) => {
-        console.log(' +++' + error);
-        callback(error, null)
-    });
-    wss.on('close', (vdata) => {
-        console.log(' -- cerrada conexion', vdata)
-    });
-
-}
-  
+                wss.on('error', (error) => {
+                      console.log(' +++' + error);
+                      new Error (error)
+                   });
+               wss.on('close', (vdata) => {
+                  console.log(' -- cerrada conexion', vdata)
+                });
 
 };
   
