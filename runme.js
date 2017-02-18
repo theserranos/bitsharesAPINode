@@ -11,7 +11,7 @@ const set = require('./config.js').api
 // parsing JSON & application/x-www-form-urlencoded
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true 
 }));
 
 
