@@ -2,7 +2,7 @@
   "name": "bitshares-api-node",
   "version": "0.0.1",
   "description": "bitshares api for node.js",
-  "main": "nodeme.js",
+  "main": "runme.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

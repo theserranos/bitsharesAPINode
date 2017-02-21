@@ -8,14 +8,17 @@ var route = require('./DEXlibs/route.js');
 
 const set = require('./config.js').api
 
+
 // parsing JSON & application/x-www-form-urlencoded
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true 
 }));
 
-
-
+    wss.on('open', () => {
+        console.log('alf connected to:', wss.url);
+        wss.send(JSON.stringify(arg));
+    });
 
 app.post('/api/', (req, resPost) => {
     console.time('/api/'); console.log(req.body);
