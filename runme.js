@@ -8,17 +8,14 @@ var route = require('./DEXlibs/route.js');
 
 const set = require('./config.js').api
 
-
 // parsing JSON & application/x-www-form-urlencoded
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true 
 }));
 
-    wss.on('open', () => {
-        console.log('alf connected to:', wss.url);
-        wss.send(JSON.stringify(arg));
-    });
+
+
 
 app.post('/api/', (req, resPost) => {
     console.time('/api/'); console.log(req.body);
@@ -28,7 +25,16 @@ app.post('/api/', (req, resPost) => {
             accountFrom:req.body.accountFrom,
             version: 'v1a',
             vaccount: req.body.vaccount,
-            vobject:req.body.vobject 
+            vobject:req.body.vobject ,
+            privKey:req.body.privKey,
+            fromAccount:req.body.fromAccount,
+            memo:req.body.memo,
+            toAccount:req.body.toAccount,
+            amount:req.body.amount,
+            asset:req.body.asset,
+            vquote:req.body.vquote
+          
+      
   
     };
   
