@@ -10,37 +10,15 @@ module.exports = function(objinput,callback) {
             temp2= { "id": 0,"method": "call", "params": [0, "get_full_accounts",[objinput.vaccount.split(' '),'false']]};
             console.log('---faccounts---',temp2); 
             break;
-      
-        case "get_named_account_balances":
-               
-             var temp2= { "id": 0,"method": "call", "params": [0, "get_full_accounts",['somebodyn1ce','somebodyn1ce'],['false']]}; 
-             console.log('----get_named_account_balances--',temp2);                   
-             break;
-       
-        case "list_assets":
-             var temp2= { "d": 0,"method": "call", "params": [0, "list_assets",[10,10]]}   
-              break;
-
-         case "lookup_accounts": 
-               var temp2= { "id": 0,"method": "call", "params": [0, "lookup_accounts",['op3nalf',1]]}
-               var temp2= { "id": 0,"method": "call", "params": [0, "lookup_accounts",[objinput.vaccount,1]]}
-                break;  
-        case "lookup_accounts_name": 
-               var temp2= { "id": 0,"method": "call", "params": [0, "lookup_accounts",['op3nalf',1]]}
-               var temp2= { "id": 0,"method": "call", "params": [0, "lookup_account_names",[objinput.vobject.split(' ')]]};
-               console.log('---------',temp2);
-                break;   
-       
+     
+        
          case "get_ticker":
                 var aux=objinput.vquote.split(' ') 
             //    var temp2= { "id": 2,"method": "call", "params": [0, "get_ticker",[ '1.3.1', '1.3.0' ]]};
                  var temp2= { "id": '2',"method": "call", "params": [0, "get_ticker",aux]}; 
                 console.log('------get_ticker---', temp2);
                 break;   
-
-        case "get_account_by_name":
-               var temp2= { "id": 0,"method": "call", "params": [0, "get_account_by_name",[objinput.vaccount.split()]]}
-                break;  
+ 
        
        case "get_objects":
           
@@ -55,8 +33,7 @@ module.exports = function(objinput,callback) {
              var temp2= { "id": '',"method": "call", "params": [3, "get_account_history", ['1.2.153811',100,100,100]]};
             break;
        
-       
-       
+          
        
       
         case "transfer":
