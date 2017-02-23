@@ -1,113 +1,105 @@
 /**
- *
+ * bitsharesAPINode main file.
  */
-
 var app = require('express')()
-var webSocket = require('ws')
+var bodyParser = require('body-parser');
+//var handler = require('./api');
+var route = require('./DEXlibs/route.js');
 
-function out(arg, callback) {
+const set = require('./config.js').api
 
-    var wss = new webSocket('wss://bitshares.openledger.info/ws');
+// parsing JSON & application/x-www-form-urlencoded
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true 
+}));
 
-    wss.on('open', () => {
-        console.log('alf connected to:', wss.url);
-        wss.send(JSON.stringify(arg));
-    });
 
-    wss.on('message', (data) => {
-        console.log(' --- ', JSON.parse(data).result);
-        wss.terminate();
-        callback(null, JSON.parse(data).result)
+
+
+app.post('/api/', (req, resPost) => {
+    console.time('/api/'); console.log(req.body);
+    var aux={
+             
+            fname:req.body.fname,
+            accountFrom:req.body.accountFrom,
+            version: 'v1a',
+            vaccount: req.body.vaccount,
+            vobject:req.body.vobject ,
+            privKey:req.body.privKey,
+            fromAccount:req.body.fromAccount,
+            memo:req.body.memo,
+            toAccount:req.body.toAccount,
+            amount:req.body.amount,
+            asset:req.body.asset,
+            vquote:req.body.vquote
+          
+      
+  
+    };
+  
+   route(aux,function(err,res){
+     if (err){console.log ('error :',err);
+              resPost.send(JSON.stringify(err));
+              resPost.end();
+             }
+     else{
+ 
+        resPost.send(JSON.stringify(res));
+        resPost.end();
+  
+         console.timeEnd('/api/')
+     }
     });
-    wss.on('error', (error) => {
-        console.log(' +++' + error);
-        callback(error, null)
-    });
-    wss.on('close', (vdata) => {
-        console.log(' -- cerrada conexion', vdata)
-    });
+});
+
+app.post('/api/wsocket/', (req, res) => {
+    console.time('/api/wsocket/')
+    try {
+        handler.wsocket(req.body.id, req.body.method, req.body.params, (response) => {
+            res.send(response)
+            res.end();
+        })
+    } catch (e) {
+        res.send({
+            error: e
+        })
+        res.end();
+    }
+    console.timeEnd('/api/wsocket/');
+});
+
+app.post('/api/rpc/', (req, res) => {
+    console.time('/api/rpc/');
+    try {
+        handler.rpc.client(req.body.id, req.body.method, req.body.params, (error, response) => {
+            if (error) {
+                throw error;
+            } else {
+                res.send(response);
+                res.end();
+            }
+        })
+    } catch (e) {
+        res.send({
+            error: e
+        })
+        res.end();
+    }
+    console.timeEnd('/api/rpc/');
+});
+
+app.listen(set.port, (err) => {
+    if (err) {
+        throw err;
+    } else {
+        console.log('Listening on: ', set.port);
+    }
+});
+
+
+
+function route (){
+  console.log ('route function')
+
 }
-
-// fin funcion out 
-
-app.get('/api/', function(req, res) {
-    res.send('Welcome to api v1')
-    res.end()
-})
-
-app.get('/api/get_accounts/', function(req, res) {
-    console.log(req.query);
-    var temp = {
-        "id": req.query.id,
-        "method": "call",
-        "params": [0, "get_accounts", [
-            ["op3nalf"]
-        ]]
-    };
-
-    out(temp, function(err, resp) {
-        if (err) {
-            res.send('error');
-            res.end();
-        } else {
-            res.send(resp);
-            res.end();
-        }
-    })
-
-});
-
-//get full accounts
-
-app.get('/api/get_full_accounts/', function(req, res) {
-    console.log(req.query);
-    var temp = {
-        "id": req.query.id,
-        "method": "call",
-        "params": [0, "get_full_accounts", [
-            ["1.2.0"], false
-        ]]
-    };
-
-
-    out(temp, function(err, resp) {
-        if (err) {
-            res.send('error');
-            res.end();
-        } else {
-            res.send(resp);
-            res.end();
-        }
-    })
-
-});
-
-
-app.get('/api/lookup_asset_symbols/', function(req, res) {
-    console.log(req.query);
-    var temp = {
-        "id": req.query.id,
-        "method": "call",
-        "params": [0, "lookup_asset_symbols", [
-            ["1.3.0"]
-        ]]
-    };
-    out(temp, function(err, resp) {
-        if (err) {
-            res.send('error');
-            res.end();
-        } else {
-            res.send(resp);
-            res.end();
-        }
-    })
-
-});
-
-
-
-app.listen(3333, () => {
-    console.log('Estamos alerta en 3333')
-});
-
-//testin my branch 
