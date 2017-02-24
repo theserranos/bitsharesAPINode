@@ -34,7 +34,8 @@ module.exports = function(objTx,callback) {
                     FetchChain("getAccount", memoSender),
                     FetchChain("getAsset", sendAmount.asset), 
                     FetchChain("getAsset", sendAmount.asset)
-                ]).then((res) => {
+                ])
+                .then((res) => {
                     let [fromAccount, toAccount, memoSender, sendAsset, feeAsset] = res;
 
                     let memoFromKey = memoSender.getIn(["options", "memo_key"]);
@@ -79,7 +80,7 @@ module.exports = function(objTx,callback) {
                       
                       tr.broadcast()
                         .then((res)=>{
-                          console.log(res);
+                          //
                           callback(null,res)
                         })
                         .catch((err)=>{
@@ -88,11 +89,11 @@ module.exports = function(objTx,callback) {
                       
                         
                         }) .catch((err)=>{
-                        console.log('---- tr.add_signe ',err)
+                        console.log('1 ---- tr.add_signe ',err)
                       })
                 }).catch((err)=>{
                   callback(err,null)
-                        console.log('2222222---- tr.add_signe ',err)
+                        console.log('2 ---- tr.add_signe ',err)
                       });
             });
         })
