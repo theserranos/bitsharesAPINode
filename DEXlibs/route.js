@@ -10,10 +10,11 @@ const vwssserver = require('../config.js').ws
 
 module.exports = function(objinput, callback) {
 
-    switch (objinput.fname) {
-      
-        case "get_full_accounts":
+    var temp2 = null;
 
+    switch (objinput.fname) {
+
+        case "get_full_accounts":
             temp2 = {
                 "id": 0,
                 "method": "call",
@@ -23,17 +24,16 @@ module.exports = function(objinput, callback) {
 
         case "get_ticker":
 
-            var aux = objinput.vquote.split(' ')
-            var temp2 = {
+            temp2 = {
                 "id": '2',
                 "method": "call",
-                "params": [0, "get_ticker", aux]
+                "params": [0, "get_ticker", objinput.vquote.split(' ')]
             };
             break;
 
         case "get_objects":
 
-            var temp2 = {
+            temp2 = {
                 "id": 0,
                 "method": "call",
                 "params": [0, "get_objects", [objinput.vobject.split(' ')]]
@@ -42,7 +42,7 @@ module.exports = function(objinput, callback) {
 
         case "get_account_history":
 
-            var temp2 = {
+            temp2 = {
                 "id": '',
                 "method": "call",
                 "params": [3, "get_account_history", ['1.2.153811', 100, 100, 100]]
@@ -66,7 +66,7 @@ module.exports = function(objinput, callback) {
                 } else {
                     callback(null, tx);
                 }
-            });;
+            });
             break;
 
         default:
@@ -85,6 +85,12 @@ module.exports = function(objinput, callback) {
     wss.on('message', (data) => {
         wssOutput = JSON.parse(data);
         wss.terminate();
+
+        if (wssOutput.error) {
+            callback(wssOutput, null)
+        } else {
+            callback(null, wssOutput)
+        }
     });
 
     wss.on('error', (error) => {
@@ -92,13 +98,10 @@ module.exports = function(objinput, callback) {
         wssOutput.error.code = -5;
         wssOutput.error.reason = 'WebSocket tunnel to bitshares node has failed';
         wss.terminate();
+        callback(wssOutput, null);
     });
 
     wss.on('close', (vdata) => {
-        if (wssOutput.error) {
-            callback(wssOutput, null)
-        } else {
-            callback(null, wssOutput)
-        }
+      console.log('closed connection: ', vdata);
     });
 };
