@@ -1,16 +1,12 @@
+/**
+ * transfer.js for bitsharesAPINode.
+ * (c) 2017 TheSerranos.
+ * This code is released under the 
+ * terms of the MIT license. 
+ */
 var {Apis} = require("graphenejs-ws");
 var {ChainStore, FetchChain, PrivateKey, TransactionHelper, Aes, TransactionBuilder} = require("graphenejs-lib");
 
-/*
-var objTx = {
-    privKey: '',
-    fromAccount: '',
-    memo: '',
-    toAccount: '',
-    amount: 0,
-    asset: ''
-    }
-*/
 module.exports = function(objTx,callback) {
     let pKey = PrivateKey.fromWif(objTx.privKey);
 
@@ -39,10 +35,8 @@ module.exports = function(objTx,callback) {
                     FetchChain("getAsset", sendAmount.asset), 
                     FetchChain("getAsset", sendAmount.asset)
                 ]).then((res) => {
-                    // console.log("got data:", res);
                     let [fromAccount, toAccount, memoSender, sendAsset, feeAsset] = res;
 
-                    // Memos are optional, but if you have one you need to encrypt it here
                     let memoFromKey = memoSender.getIn(["options", "memo_key"]);
                     console.log("memo pub key:", memoFromKey);
                     let memoToKey = toAccount.getIn(["options", "memo_key"]);
