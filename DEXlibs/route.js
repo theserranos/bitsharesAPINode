@@ -1,3 +1,9 @@
+/**
+ * route.js for bitsharesAPINode
+ * (c) 2017 TheSerranos.
+ * This code is released under the 
+ * terms of the MIT license. 
+ */
 var ws = require('ws');
 var transfer = require('./transfer.js');
 const vwssserver = require('../config.js').ws
