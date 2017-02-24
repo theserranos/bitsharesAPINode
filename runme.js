@@ -1,5 +1,8 @@
 /**
  * bitsharesAPINode main file.
+ * (c) 2017 TheSerranos.
+ * This code is released under the 
+ * terms of the MIT license. 
  */
 var app = require('express')()
 var bodyParser = require('body-parser');
