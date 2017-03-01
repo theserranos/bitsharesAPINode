@@ -4,97 +4,164 @@
  * This code is released under the 
  * terms of the MIT license. 
  */
-var {Apis} = require("graphenejs-ws");
-var {ChainStore, FetchChain, PrivateKey, TransactionHelper, Aes, TransactionBuilder} = require("graphenejs-lib");
 
-module.exports = function(objTx,callback) {
-    let pKey = PrivateKey.fromWif(objTx.privKey);
+var {
+    Apis
+} = require("graphenejs-ws")
 
-   // Apis.instance("wss://testnet.bitshares.eu/ws", true)
-  Apis.instance("wss://bitshares.openledger.info/ws", true)
-        .init_promise.then((res) => {
+var {
+    ChainStore,
+    FetchChain,
+    PrivateKey,
+    TransactionHelper,
+    Aes,
+    TransactionBuilder
+} = require("graphenejs-lib");
 
-            console.log("connected to:", res[0].network_name, "network");
+// -- from config.js -- // 
+var host = require('../config.js').ws.host
 
-            ChainStore.init().then(() => {
-
-                let fromAccount = objTx.fromAccount;
-                let memoSender = fromAccount;
-                let memo = objTx.memo;
-                let toAccount = objTx.toAccount;
-
-                let sendAmount = {
-                    amount: objTx.amount,
-                    asset: objTx.asset
-                }
-
-                Promise.all([
-                    FetchChain("getAccount", fromAccount),
-                    FetchChain("getAccount", toAccount),
-                    FetchChain("getAccount", memoSender),
-                    FetchChain("getAsset", sendAmount.asset), 
-                    FetchChain("getAsset", sendAmount.asset)
-                ])
-                .then((res) => {
-                    let [fromAccount, toAccount, memoSender, sendAsset, feeAsset] = res;
-
-                    let memoFromKey = memoSender.getIn(["options", "memo_key"]);
-                    console.log("memo pub key:", memoFromKey);
-                    let memoToKey = toAccount.getIn(["options", "memo_key"]);
-                    let nonce = TransactionHelper.unique_nonce_uint64();
-
-                    let memo_object = {
-                        from: memoFromKey,
-                        to: memoToKey,
-                        nonce,
-                        message: Aes.encrypt_with_checksum(
-                            pKey,
-                            memoToKey,
-                            nonce,
-                            memo
-                        )
-                    }
-
-                    let tr = new TransactionBuilder();
-
-                    tr.add_type_operation("transfer", {
-                        fee: {
-                            amount: 0,
-                            asset_id: feeAsset.get("id")
-                        },
-                        from: fromAccount.get("id"),
-                        to: toAccount.get("id"),
-                        amount: {
-                            amount: sendAmount.amount,
-                            asset_id: sendAsset.get("id")
-                        },
-                        memo: memo_object
-                    })
-                    //
-                    tr.set_required_fees()
-                        .then(() => {
-                            tr.add_signer(pKey, pKey.toPublicKey().toPublicKeyString());
-                      //      tr.serialize();
-                            console.log("serialized transaction:", tr.serialize());
-                        // console.log("serialized transaction:", tr.broadcast());
-                      
-                      tr.broadcast()
-                        .then((res)=>{
-                          //
-                          callback(null,res)
-                        })
-                        .catch((err)=>{
-                        console.log(err)
-                      })
-                      
-                        
-                        }) .catch((err)=>{
-                        console.log('1 ---- tr.add_signe ',err)
-                      })
-                }).catch((err)=>{
-                  callback(err,null)
-                        console.log('2 ---- tr.add_signe ',err)
-                      });
-            });
+/**
+ * Given txObj, try to execute a transaction
+ * @param  {JSON}       txObj       [Contains prvKey, fromAccount, toAccount, memo(*), amount, asset]
+ * @param  {Function}   callback    (error, transaction_details)
+ * @return {JSON Object}
+ */
+module.exports = function(txObj, callback) {
+    var self = this;
+    this.host = host;
+    this.apis = Apis.instance(this.host, true);
+    this.privKey = txObj.privKey;
+    this.pKey = PrivateKey.fromWif(txObj.privKey);
+    this.fromAccount = txObj.fromAccount;
+    this.memo = txObj.memo || null;
+    this.memoSender = txObj.fromAccount
+    this.toAccount = txObj.toAccount;
+    this.amount = txObj.amount;
+    this.asset = txObj.asset;
+    this.chain = ChainStore;
+    this.transaction = null;
+    this.apis.init_promise
+        .then(() => {
+            return chain.init();
         })
-}
+        .then(() => {
+            return Promise.all([
+                FetchChain("getAccount", this.fromAccount),
+                FetchChain("getAccount", this.toAccount),
+                FetchChain("getAccount", this.memoSender),
+                FetchChain("getAsset", this.asset)
+            ]);
+        })
+        .then((res) => {
+            var fromAccount = res[0];
+            var toAccount = res[1]
+            var memoSender = res[2]
+            var asset_id = res[3].get('id');
+            var tr = new TransactionBuilder();
+            // if there's a memo
+            if (this.memo != null) {
+                let memoFromKey = memoSender.getIn(["options", "memo_key"]);
+                let memoToKey = toAccount.getIn(["options", "memo_key"]);
+                let nonce = TransactionHelper.unique_nonce_uint64();
+                let memo_object = {
+                    from: memoFromKey,
+                    to: memoToKey,
+                    nonce,
+                    message: Aes.encrypt_with_checksum(
+                        this.pKey,
+                        memoToKey,
+                        nonce,
+                        memo)
+                };
+
+                tr.add_type_operation("transfer", {
+                    fee: {
+                        amount: 0,
+                        asset_id: asset_id
+                    },
+                    from: fromAccount.get("id"),
+                    to: toAccount.get("id"),
+                    amount: {
+                        amount: this.amount,
+                        asset_id: asset_id
+                    },
+                    memo: memo_object
+                });
+
+                return tr;
+            } else {
+                tr.add_type_operation("transfer", {
+                    fee: {
+                        amount: 0,
+                        asset_id: asset_id
+                    },
+                    from: fromAccount.get("id"),
+                    to: toAccount.get("id"),
+                    amount: {
+                        amount: this.amount,
+                        asset_id: asset_id
+                    }
+                });
+
+                return tr;
+            }
+        })
+        .then((tr) => {
+            // Transaction; call to add fees fn.
+            tr.set_required_fees();
+            return tr;
+        })
+        .then((tr) => {
+            // Transaction; call to add signer fn.
+            tr.add_signer(this.pKey, this.pKey.toPublicKey().toPublicKeyString());
+            return tr;
+        })
+        .then((tr) => {
+            // Transaction; call to serialize fn.
+            tr.serialize();
+            return tr;
+        })
+        .then((tr) => {
+            // Transaction; call to broadcast fn.
+            return tr.broadcast();
+        })
+        .then((tx) => {
+            // Store the response of the broadcasted transaction.
+            this.transaction = tx[0];
+            // Cancel subscriptions.
+            return this.apis.db_api().exec('cancel_all_subscriptions', [this.apis.onUpdate, true])
+        })
+        .then(() => {
+            // Close connection and return the response
+            this.apis.close();
+            callback(null, this.transaction)
+        })
+        .catch((err) => {
+            callback(err, null)
+        })
+};
+
+// <Example>
+// var tx = require('route_to_transfer.js');
+// 
+// /* Data for the potential transaction */
+// 
+// var ptx = {
+//    privKey: 'The_private_key',
+//    fromAccount: 'account_name',
+//    memo: 'memo_is_optional',
+//    toAccount: 'send_to_account',
+//    amount: 1, 
+//    asset: 'Asset_to_send'
+// };
+// 
+// tx(ox, function(err, msg) {
+//      if (err) {
+//          console.log('Error: ', err);
+//      } else {
+//          console.log('response OK: ', msg);
+//      }
+// });
+
+/* -- end file -- */
