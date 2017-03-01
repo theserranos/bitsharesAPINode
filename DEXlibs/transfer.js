@@ -25,7 +25,7 @@ var host = require('../config.js').ws.host
  * Given txObj, try to execute a transaction
  * @param  {JSON}       txObj       [Contains prvKey, fromAccount, toAccount, memo(*), amount, asset]
  * @param  {Function}   callback    (error, transaction_details)
- * @return {JSON Object}
+ * @return {JSON}
  */
 module.exports = function(txObj, callback) {
     var self = this;
