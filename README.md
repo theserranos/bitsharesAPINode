@@ -18,7 +18,7 @@ Run it:
 
     node runme
     
-Some settings can be changed in the config.js file, see the commented out lines previous each field.
+Some settings can be changed in the config.js file, see the commented out lines previous to each field.
 
 ## License
 This software is released under the terms of the MIT license. You can see the full text in [LICENSE](LICENSE) for more information or https://opensource.org/licenses/MIT.
