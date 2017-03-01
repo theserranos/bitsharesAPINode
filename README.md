@@ -7,16 +7,16 @@ bitsharesAPINode requires <a href="https://nodejs.org">node.js</a> v6.9.5 or bet
 # Installing and Running
 Clone the repository:
 
-    $ git clone https://github.com/theserranos/bitsharesAPINode.git
-    $ cd bitsharesAPINode
+    git clone https://github.com/theserranos/bitsharesAPINode.git
+    cd bitsharesAPINode
 
 Install dependencies with npm:
 
-    $ npm install
+    npm install
 
 Run it:
 
-    $ node runme
+    node runme
     
 Some settings can be changed in the config.js file, see the commented out lines previous each field.
 
