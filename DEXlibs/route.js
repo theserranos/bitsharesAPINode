@@ -11,7 +11,7 @@ const vwssserver = require('../config.js').ws
 module.exports = function(objinput, callback) {
 
     var temp2 = null;
-
+    console.log('---->route',objinput.fname);
     switch (objinput.fname) {
 
         case "get_full_accounts":
@@ -20,6 +20,7 @@ module.exports = function(objinput, callback) {
                 "method": "call",
                 "params": [0, "get_full_accounts", [objinput.vaccount.split(' '), 'false']]
             };
+            console.log('gfa ---->route',temp2);
             break;
 
         case "get_ticker":
