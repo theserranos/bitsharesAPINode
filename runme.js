@@ -1,92 +1,39 @@
 /**
  * bitsharesAPINode main file.
+ * (c) 2017 TheSerranos.
+ * This code is released under the 
+ * terms of the MIT license. 
  */
 var app = require('express')()
 var bodyParser = require('body-parser');
-//var handler = require('./api');
 var route = require('./DEXlibs/route.js');
-
-const set = require('./config.js').api
+var set = require('./config.js').api
 
 // parsing JSON & application/x-www-form-urlencoded
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-    extended: true 
+    extended: true
 }));
 
-
-
-
-app.post('/api/', (req, resPost) => {
-    console.time('/api/'); console.log(req.body);
-    var aux={
-             
-            fname:req.body.fname,
-            accountFrom:req.body.accountFrom,
-            version: 'v1a',
-            vaccount: req.body.vaccount,
-            vobject:req.body.vobject ,
-            privKey:req.body.privKey,
-            fromAccount:req.body.fromAccount,
-            memo:req.body.memo,
-            toAccount:req.body.toAccount,
-            amount:req.body.amount,
-            asset:req.body.asset,
-            vquote:req.body.vquote
-          
-      
-  
-    };
-  
-   route(aux,function(err,res){
-     if (err){console.log ('error :',err);
-              resPost.send(JSON.stringify(err));
-              resPost.end();
-             }
-     else{
+app.post('/api/', (req, res) => {
+    var requested = {};
+    try {
+        aux=req.body;
  
-        resPost.send(JSON.stringify(res));
-        resPost.end();
-  
-         console.timeEnd('/api/')
-     }
-    });
-});
-
-app.post('/api/wsocket/', (req, res) => {
-    console.time('/api/wsocket/')
-    try {
-        handler.wsocket(req.body.id, req.body.method, req.body.params, (response) => {
-            res.send(response)
-            res.end();
-        })
     } catch (e) {
-        res.send({
-            error: e
-        })
-        res.end();
-    }
-    console.timeEnd('/api/wsocket/');
-});
+        requested.error = e;
+    } finally {
 
-app.post('/api/rpc/', (req, res) => {
-    console.time('/api/rpc/');
-    try {
-        handler.rpc.client(req.body.id, req.body.method, req.body.params, (error, response) => {
-            if (error) {
-                throw error;
+        route(aux, function(err, resp) {
+            if (err) {
+                res.send(JSON.stringify(err));
+                res.end();
             } else {
-                res.send(response);
+                res.send(JSON.stringify(resp));
                 res.end();
             }
-        })
-    } catch (e) {
-        res.send({
-            error: e
-        })
-        res.end();
+        });
     }
-    console.timeEnd('/api/rpc/');
 });
 
 app.listen(set.port, (err) => {
@@ -97,9 +44,4 @@ app.listen(set.port, (err) => {
     }
 });
 
-
-
-function route (){
-  console.log ('route function')
-
-}
+/* -- end . file -- */
