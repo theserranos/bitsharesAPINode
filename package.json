@@ -1,6 +1,6 @@
 {
   "name": "bitshares-api-node",
-  "version": "0.0.1",
+  "version": "0.0.2a",
   "description": "bitshares api for node.js",
   "main": "runme.js",
   "scripts": {
