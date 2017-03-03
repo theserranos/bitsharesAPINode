@@ -32,14 +32,7 @@ var transfer=require('./transferbts.js');
 */
 function callback(req,res){console.log('alf callback',res)}
 
-      var objTx = {
-                privKey: '5KUGF2a8zr6q7EgYY7gJLrp88oo3TWtPyjP1sqH89QDWRykBNXd',
-                fromAccout: 'luisan00.testing' ,
-                memo: '' ,
-                toAccount: 'faucet',
-                amount: 100000 ,
-                asset: 'TEST'
-                } 
+      var objTx = {} 
               
               
                // var test=transac('ẗransfer')  ;
