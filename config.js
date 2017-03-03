@@ -22,7 +22,11 @@ config.ws = {
 };
 // api listen on port;
 config.api = {
-    port: 3333
+    port: 3333,
+    code: {
+    	name: 'bitsharesAPINode',
+    	version: '0.0.3b'
+    }
 };
 
 module.exports = config;

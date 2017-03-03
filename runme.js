@@ -14,13 +14,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.all('/api/', (req, res) => {
+    console.log(`${new Date()} - /api/`);
+    res.send(JSON.stringify(set.code));
+    res.end();
+});
 
-app.post('/api/', (req, res) => {
+app.post('/api/query/', (req, res) => {
+    console.log(`${new Date()} - /api/query/`);
+    var self = this;
     var requested = {};
+    this.requested = requested;
+    this.res = res;
     try {
         requested.fname = req.body.fname;
         requested.accountFrom = req.body.accountFrom;
-        requested.version = 'v1a';
         requested.vaccount = req.body.vaccount;
         requested.vobject = req.body.vobject;
         requested.privKey = req.body.privKey;
@@ -33,14 +41,13 @@ app.post('/api/', (req, res) => {
     } catch (e) {
         requested.error = e;
     } finally {
-
-        route(aux, function(err, res) {
+        route(requested, function(err, data) {
             if (err) {
-                res.send(JSON.stringify(err));
-                res.end();
+                self.res.send(JSON.stringify(err));
+                self.res.end();
             } else {
-                res.send(JSON.stringify(res));
-                res.end();
+                self.res.send(JSON.stringify(data));
+                self.res.end();
             }
         });
     }

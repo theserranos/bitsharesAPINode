@@ -9,70 +9,84 @@ var transfer = require('./transfer.js');
 const vwssserver = require('../config.js').ws
 
 module.exports = function(objinput, callback) {
-
     var temp2 = null;
-    console.log('---->route',objinput.fname);
-    switch (objinput.fname) {
 
+    if (objinput.error) callback(objinput.error, null);
+
+    switch (objinput.fname) {
         case "get_full_accounts":
-            temp2 = {
-                "id": 0,
-                "method": "call",
-                "params": [0, "get_full_accounts", [objinput.vaccount.split(' '), 'false']]
-            };
-            console.log('gfa ---->route',temp2);
+            try {
+                temp2 = {
+                    "id": 0,
+                    "method": "call",
+                    "params": [0, "get_full_accounts", [objinput.vaccount.split(' '), 'false']]
+                }
+            } catch (e) {
+                callback(e, null);
+            }
             break;
 
         case "get_ticker":
-
-            temp2 = {
-                "id": '2',
-                "method": "call",
-                "params": [0, "get_ticker", objinput.vquote.split(' ')]
-            };
+            try {
+                temp2 = {
+                    "id": '2',
+                    "method": "call",
+                    "params": [0, "get_ticker", objinput.vquote.split(' ')]
+                };
+            } catch (e) {
+                callback(e, null);
+            }
             break;
 
         case "get_objects":
-
-            temp2 = {
-                "id": 0,
-                "method": "call",
-                "params": [0, "get_objects", [objinput.vobject.split(' ')]]
-            };
+            try {
+                temp2 = {
+                    "id": 0,
+                    "method": "call",
+                    "params": [0, "get_objects", [objinput.vobject.split(' ')]]
+                };
+            } catch (e) {
+                callback(e, null);
+            }
             break;
 
         case "get_account_history":
-
-            temp2 = {
-                "id": '',
-                "method": "call",
-                "params": [3, "get_account_history", ['1.2.153811', 100, 100, 100]]
-            };
+            try {
+                temp2 = {
+                    "id": '',
+                    "method": "call",
+                    "params": [3, "get_account_history", ['1.2.153811', 100, 100, 100]]
+                };
+            } catch (e) {
+                callback(e, null);
+            }
             break;
 
         case "transfer":
-
-            var objTx = {
-                privKey: objinput.privKey,
-                fromAccount: objinput.fromAccount,
-                memo: objinput.memo,
-                toAccount: objinput.toAccount,
-                amount: objinput.amount,
-                asset: objinput.asset
-            };
-
-            transfer(objTx, function(err, tx) {
-                if (err) {
-                    callback(err, null)
-                } else {
-                    callback(null, tx);
-                }
-            });
+            try {
+                var objTx = {
+                    privKey: objinput.privKey,
+                    fromAccount: objinput.fromAccount,
+                    memo: objinput.memo,
+                    toAccount: objinput.toAccount,
+                    amount: objinput.amount,
+                    asset: objinput.asset
+                };
+                transfer(objTx, function(err, tx) {
+                    if (err) {
+                        callback(err, null)
+                    } else {
+                        callback(null, tx);
+                    }
+                });
+            } catch (e) {
+                callback(e, null)
+            }
             break;
 
         default:
             callback({
-                error: 'no function available'
+                error: `no function available: ${objinput.fname}`
             }, null)
     }
 
@@ -102,7 +116,7 @@ module.exports = function(objinput, callback) {
         callback(wssOutput, null);
     });
 
-    wss.on('close', (vdata) => {
-      console.log('closed connection: ', vdata);
+    wss.on('close', (code) => {
+        console.log('closed connection: ', code);
     });
 };
