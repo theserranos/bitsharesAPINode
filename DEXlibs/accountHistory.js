@@ -13,8 +13,6 @@ var host = require('../config.js').ws.host;
  * @return {JSON}            		[]
  */
 module.exports = function(data, callback) {
-	// @private {String} 	data.account
-	// @private {Number}	data.limit
     this.accountName = data.account;
     this.limit = data.limit;
     this.host = host;
