@@ -39,5 +39,4 @@ module.exports = function(data, callback) {
             console.log(err);
             callback(err, null);
         })
-
 };
