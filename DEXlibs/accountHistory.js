@@ -10,7 +10,7 @@ var host = require('../config.js').ws.host;
 /**
  * @param  {JSON}   	  data     	[]
  * @param  {Function} 	callback 	[]
- * @return {JSON}            		  []
+ * @return {JSON}            		[]
  */
 module.exports = function(data, callback) {
 	// @private {String} 	data.account
