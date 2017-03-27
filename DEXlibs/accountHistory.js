@@ -8,7 +8,7 @@ var { ChainStore, FetchChain} = require("graphenejs-lib");
 var host = require('../config.js').ws.host;
 
 /**
- * @param  {JSON}   	  data     	[]
+ * @param  {JSON}   	data     	[]
  * @param  {Function} 	callback 	[]
  * @return {JSON}            		[]
  */
