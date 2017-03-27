@@ -34,7 +34,6 @@ module.exports = function(data, callback) {
         	callback(null, history);
         })
         .catch((err) => {
-            console.log(err);
             callback(err, null);
         })
 };
